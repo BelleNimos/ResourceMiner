@@ -1,0 +1,2 @@
+# ResourceMiner
+ Test exercise
