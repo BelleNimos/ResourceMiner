@@ -1,4 +1,3 @@
-using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,8 +52,8 @@ public abstract class Cell : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Resource resource = Instantiate(_prefabResource, transform);
-            resource.transform.DOScale(new Vector3( 0, 0, 0), 0.1f);
             _resources.Push(resource);
+            resource.PlayDecreaseAnimation();
         }
     }
 

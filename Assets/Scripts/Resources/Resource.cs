@@ -1,20 +1,17 @@
+using DG.Tweening;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 public abstract class Resource : MonoBehaviour
 {
     [SerializeField] protected ResourceSettings ResourceSettings;
 
-    private Animator _animator;
     private bool _isReady;
     private float _delayAfterFill;
     private float _afterFillTimer = 0f;
-    
+
+    private const float DurationAnimation = 0.5f;
     private const int ResourceLayer = 6;
     private const int ResourceDropLayer = 7;
-    
-    private const string Decrease = "Decrease";
-    private const string Increase = "Increase";
 
     public int NumJumps { get; } = 1;
     public float Duration { get; protected set; }
@@ -23,7 +20,6 @@ public abstract class Resource : MonoBehaviour
 
     private void Start()
     {
-        _animator = GetComponent<Animator>();
         _isReady = false;
         _delayAfterFill = ResourceSettings.DelayAfterFall;
     }
@@ -57,12 +53,12 @@ public abstract class Resource : MonoBehaviour
 
     public void PlayDecreaseAnimation()
     {
-        _animator.SetTrigger(Decrease);
+        transform.DOScale(new Vector3(0, 0, 0), DurationAnimation);
     }
 
     public void PlayIncreaseAnimation()
     {
-        _animator.SetTrigger(Increase);
+        transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), DurationAnimation);
     }
 
     public void EnableTimer()

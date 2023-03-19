@@ -35,8 +35,6 @@ public abstract class Factory : MonoBehaviour
 
     private void ThrowAwayResource()
     {
-        _factoryAnimator.PlayVibrationAnimation();
-
         int index = Random.Range(0, SpawnPoints.Count);
 
         Resource resource = _resources.Pop();
@@ -53,6 +51,8 @@ public abstract class Factory : MonoBehaviour
 
     public void InstantiateResource()
     {
+        _factoryAnimator.PlayVibrationAnimation();
+
         for (int i = 0; i < CountResourcesRequired; i++)
         {
             _resources.Push(Instantiate(PrefabSpawnResource, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity));
@@ -70,7 +70,6 @@ public abstract class Factory : MonoBehaviour
 
     public void DestroyResource(Resource resource)
     {
-        _factoryAnimator.PlayVibrationAnimation();
         Destroy(resource.gameObject);
 
         _counter++;

@@ -17,7 +17,7 @@ public class Bag : MonoBehaviour
     private Dictionary<string, Cell> _cells;
     private float _delayFlyingResource;
     private string _savePath;
-    private string _saveFileName = "bagData.txt";
+    private string _saveFileName = "bagData.json";
 
     private const string Fill = "Fill";
 
