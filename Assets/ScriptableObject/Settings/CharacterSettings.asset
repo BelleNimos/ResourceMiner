@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fba472a87ad4a654bacc70698ce2f8b7, type: 3}
-  m_Name: GameSettings
+  m_Script: {fileID: 11500000, guid: d9b251c52e57b1746a83ab980d94ee7e, type: 3}
+  m_Name: CharacterSettings
   m_EditorClassIdentifier: 
   _moveSpeed: 8
-  _productionRate: 0.1
-  _delayAfterFall: 3
+  _radiusPickUpResource: 2

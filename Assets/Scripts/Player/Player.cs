@@ -1,20 +1,25 @@
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerAnimator))]
+[RequireComponent(typeof(PlayerAnimator), typeof(BoxCollider))]
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameSettings _gameSettings;
+    [SerializeField] private CharacterSettings _characterSettings;
     [SerializeField] private Bag _bag;
     [SerializeField] private JoystickMovement _joystickMovement;
 
     private PlayerAnimator _playerAnimator;
-    private float _productionRate;
+    private BoxCollider _boxCollider;
     private float _productionRateTimer = 0f;
+
+    private void Awake()
+    {
+        _playerAnimator = GetComponent<PlayerAnimator>();
+        _boxCollider = GetComponent<BoxCollider>();
+    }
 
     private void Start()
     {
-        _playerAnimator = GetComponent<PlayerAnimator>();
-        _productionRate = _gameSettings.ProductionRate;
+        _boxCollider.size = new Vector3(_characterSettings.RadiusPickUpResource, 2, _characterSettings.RadiusPickUpResource);
     }
 
     private void Update()
@@ -33,12 +38,12 @@ public class Player : MonoBehaviour
     {
         if (other.TryGetComponent<Spawner>(out Spawner spawner))
             if (_joystickMovement.IsActive == false)
-                if (spawner.CurrentCountResource > 0 && _productionRateTimer >= _productionRate)
+                if (spawner.CurrentCountResource > 0 && _productionRateTimer >= spawner.ProductionRate)
                     ExtractResource(spawner);
 
         if (other.TryGetComponent<Factory>(out Factory factory))
             if (_joystickMovement.IsActive == false)
-                if (_productionRateTimer >= _productionRate)
+                if (_productionRateTimer >= factory.ProductionRate)
                     GiveAwayResource(factory);
     }
 
@@ -56,7 +61,7 @@ public class Player : MonoBehaviour
     private void ExtractResource(Spawner spawner)
     {
         _playerAnimator.PlayMiningAnimation();
-        spawner.ThrowAwayResource();
+        spawner.ThrowAwayResources();
         ResetTimer();
     }
 }

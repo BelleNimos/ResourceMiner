@@ -3,12 +3,12 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public abstract class Resource : MonoBehaviour
 {
-    [SerializeField] GameSettings _gameSettings;
+    [SerializeField] protected ResourceSettings ResourceSettings;
 
     private Animator _animator;
     private bool _isReady;
-    private float _delayAfterFall;
-    private float _afterFallTimer = 0f;
+    private float _delayAfterFill;
+    private float _afterFillTimer = 0f;
     
     private const int ResourceLayer = 6;
     private const int ResourceDropLayer = 7;
@@ -16,24 +16,27 @@ public abstract class Resource : MonoBehaviour
     private const string Decrease = "Decrease";
     private const string Increase = "Increase";
 
+    public int NumJumps { get; } = 1;
+    public float Duration { get; protected set; }
+    public float JumpPower { get; protected set; }
     public string Name { get; protected set; }
 
     private void Start()
     {
         _animator = GetComponent<Animator>();
         _isReady = false;
-        _delayAfterFall = _gameSettings.DelayAfterFall;
+        _delayAfterFill = ResourceSettings.DelayAfterFall;
     }
 
     private void Update()
     {
         if (_isReady == true)
-            _afterFallTimer += Time.deltaTime;
+            _afterFillTimer += Time.deltaTime;
     }
 
     public bool CheckReadiness()
     {
-        if (_afterFallTimer >= _delayAfterFall)
+        if (_afterFillTimer >= _delayAfterFill)
         {
             _isReady = false;
             return true;

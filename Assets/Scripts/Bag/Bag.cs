@@ -1,3 +1,4 @@
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -5,52 +6,59 @@ using DG.Tweening;
 [RequireComponent(typeof(Animator))]
 public class Bag : MonoBehaviour
 {
-    [SerializeField] private GameSettings _gameSettings;
+    [SerializeField] private BagSettings _bagSettings;
+    [SerializeField] private List<Cell> _listCells;
     [SerializeField] private List<Point> _departurePoints;
     [SerializeField] private List<ResourceUI> _resourcesUI;
+    [SerializeField] private Transform _points;
 
+    private BagData _bagData;
     private Animator _animator;
-    private List<string> _keys;
     private Dictionary<string, Cell> _cells;
+    private float _delayFlyingResource;
+    private string _savePath;
+    private string _saveFileName = "bagData.txt";
 
     private const string Fill = "Fill";
-    private const int NumJumps = 1;
-    private const float JumpPower = 2f;
-    private const float Duration = 0.25f;
 
     private void Awake()
     {
-        _animator = GetComponent<Animator>();
-        _keys = new List<string>() { "Crystal", "Iron", "Lumber", "Gold", "Coal" };
+        _delayFlyingResource = _bagSettings.DelayFlyingResource;
+        _points.localScale = new Vector3(_bagSettings.ResourceSpread, 1, _bagSettings.ResourceSpread);
+
         _cells = new Dictionary<string, Cell>();
+        _bagData = new BagData();
+        _animator = GetComponent<Animator>();
+
+        for (int i = 0; i < _listCells.Count; i++)
+            _cells.Add(_listCells[i].Name, _listCells[i]);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        _savePath = Path.Combine(Application.persistentDataPath, saveFileName);
+#else
+        _savePath = Path.Combine(Application.dataPath, _saveFileName);
+#endif
+        if (File.Exists(_savePath) == true)
+            _bagData.LoadFromFile(_savePath, _cells, transform);
+        else
+            SetCellsMaxCount();
     }
 
     private void Start()
     {
-        foreach (var key in _keys)
-            _cells.Add(key, new Cell(10));
-
-        foreach (var cell in _cells)
-            foreach (var resourceUI in _resourcesUI)
-                if (cell.Key == resourceUI.Name)
-                    cell.Value.SetResourceUI(resourceUI);
-
         foreach (var cell in _cells)
             cell.Value.AssignCount();
     }
 
-    private void MoveResource(Transform target, Resource resource)
+    private void OnApplicationQuit()
     {
-        resource.transform.DOJump(target.position, JumpPower, NumJumps, Duration)
-            .SetUpdate(UpdateType.Normal, false)
-            .SetLink(resource.gameObject)
-            .OnKill(() =>
-            {
-                resource.transform.SetParent(target, true);
-                resource.transform.localPosition = new Vector3(0, 0, 0);
-                resource.transform.localRotation = Quaternion.LookRotation(new Vector3(0, 0, 0));
-            }
-            );
+        _bagData.SaveToFile(_savePath, _cells);
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (Application.platform == RuntimePlatform.Android)
+            _bagData.SaveToFile(_savePath, _cells);
     }
 
     private Point GetRandomPoint()
@@ -60,22 +68,35 @@ public class Bag : MonoBehaviour
         return _departurePoints[index];
     }
 
-    public void AddResource(Resource resource)
+    private void SetCellsMaxCount()
     {
         foreach (var cell in _cells)
         {
-            if (cell.Key == resource.Name)
-            {
-                if (_cells[resource.Name].MaxCountResources > cell.Value.CurrentCountResources)
-                {
-                    MoveResource(transform, resource);
-                    resource.ChangeLayer();
-                    resource.PlayDecreaseAnimation();
-                    _animator.SetTrigger(Fill);
-                    cell.Value.AddResource(resource);
-                }
-            }
+            if (cell.Key == "Crystal")
+                cell.Value.SetMaxCountResources(_bagSettings.MaxCountCrystal);
+            else if (cell.Key == "Gold")
+                cell.Value.SetMaxCountResources(_bagSettings.MaxCountGold);
+            else if (cell.Key == "Iron")
+                cell.Value.SetMaxCountResources(_bagSettings.MaxCountIron);
+            else if (cell.Key == "Coal")
+                cell.Value.SetMaxCountResources(_bagSettings.MaxCountCoal);
+            else if (cell.Key == "Lumber")
+                cell.Value.SetMaxCountResources(_bagSettings.MaxCountLumber);
         }
+    }
+
+    private void MoveResource(Resource resource)
+    {
+        resource.transform.DOJump(transform.position, resource.JumpPower, resource.NumJumps, resource.Duration)
+            .SetUpdate(UpdateType.Normal, false)
+            .SetLink(resource.gameObject)
+            .OnKill(() =>
+            {
+                resource.transform.SetParent(transform, true);
+                resource.transform.localPosition = new Vector3(0, 0, 0);
+                resource.transform.localRotation = Quaternion.LookRotation(new Vector3(0, 0, 0));
+            }
+            );
     }
 
     public bool CheckAvailabilityResource(string name)
@@ -86,6 +107,24 @@ public class Bag : MonoBehaviour
                     return true;
 
         return false;
+    }
+
+    public void AddResource(Resource resource)
+    {
+        foreach (var cell in _cells)
+        {
+            if (cell.Key == resource.Name)
+            {
+                if (cell.Value.MaxCountResources > cell.Value.CurrentCountResources)
+                {
+                    MoveResource(resource);
+                    resource.ChangeLayer();
+                    resource.PlayDecreaseAnimation();
+                    _animator.SetTrigger(Fill);
+                    cell.Value.AddResource(resource);
+                }
+            }
+        }
     }
 
     public void GiveAwayResource(Factory factory, string nameResource)
@@ -101,21 +140,22 @@ public class Bag : MonoBehaviour
                     cell.Value.PullResource(ref resource);
 
                     resource.PlayIncreaseAnimation();
+                    resource.transform.SetParent(null, true);
 
-                    resource.transform.DOJump(GetRandomPoint().transform.position, JumpPower, NumJumps, Duration)
+                    resource.transform.DOJump(GetRandomPoint().transform.position, resource.JumpPower, resource.NumJumps, resource.Duration)
                         .SetUpdate(UpdateType.Normal, false)
                         .SetLink(resource.gameObject)
+                        .AppendInterval(_delayFlyingResource)
                         .OnKill(() =>
                         {
-                            resource.transform.DOJump(factory.transform.position, JumpPower, NumJumps, Duration)
+                            resource.transform.DOJump(factory.transform.position, resource.JumpPower, resource.NumJumps, resource.Duration)
                                 .SetUpdate(UpdateType.Normal, false)
                                 .SetLink(resource.gameObject)
                                 .OnKill(() =>
                                 {
-                                    resource.transform.SetParent(factory.transform, true);
                                     resource.transform.localPosition = new Vector3(0, 0, 0);
                                     resource.transform.localRotation = Quaternion.LookRotation(new Vector3(0, 0, 0));
-                                    factory.TransferResource(resource);
+                                    factory.DestroyResource(resource);
                                 }
                                 );
                         }

@@ -1,73 +1,53 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 [RequireComponent(typeof(SpawnerAnimator))]
-public class Spawner : MonoBehaviour
+public abstract class Spawner : MonoBehaviour
 {
-    [SerializeField] private GameSettings _gameSettings;
-    [SerializeField] private List<Point> _spawnPoints;
-    [SerializeField] private Resource _prefabResource;
+    [SerializeField] private List<Point> SpawnPoints;
+    [SerializeField] private Resource PrefabResource;
 
-    private Stack<Resource> _resources;
-    private SpawnerAnimator _spawnerAnimator;
-    private int _maxResourcesCount = 5;
-    private float _spawnTimer = 0f;
-    private float _delaySpawn = 5f;
-    private bool _isEmpty;
-    
-    private const int NumJumps = 1;
-    private const float JumpPower = 8f;
-    private const float Duration = 0.6f;
+    [SerializeField] protected SpawnerSettings SpawnerSettings;
 
-    public int CurrentCountResource => _resources.Count;
+    private Stack<Resource> Resources;
+    private SpawnerAnimator SpawnerAnimator;
+    private bool IsEmpty;
+    private float SpawnTimer = 0f;
+
+    protected int CountPerHit;
+    protected int CountResources;
+    protected float DelayBeforeRecovery;
+
+    public float ProductionRate { get; protected set; }
+    public int CurrentCountResource => Resources.Count;
 
     private void Awake()
     {
-        _resources = new Stack<Resource>();
-        _spawnerAnimator = GetComponent<SpawnerAnimator>();
-    }
-
-    private void Start()
-    {
-        InstantiateResources();
+        Resources = new Stack<Resource>();
+        SpawnerAnimator = GetComponent<SpawnerAnimator>();
     }
 
     private void Update()
     {
-        _spawnTimer += Time.deltaTime;
+        SpawnTimer += Time.deltaTime;
 
-        if (_isEmpty == true && _spawnTimer >= _delaySpawn)
+        if (IsEmpty == true && SpawnTimer >= DelayBeforeRecovery)
         {
             InstantiateResources();
-            _spawnerAnimator.PlayAnimationIncrease();
+            SpawnerAnimator.PlayAnimationIncrease();
         }
     }
 
-    private void ResetTimerSpawn()
+    private void ThrowResource()
     {
-        _spawnerAnimator.PlayAnimationDecrease();
-        _spawnTimer = 0f;
-        _isEmpty = true;
-    }
+        SpawnerAnimator.PlayVibrationAnimation();
 
-    public void InstantiateResources()
-    {
-        for (int i = 0; i < _maxResourcesCount; i++)
-            _resources.Push(Instantiate(_prefabResource, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity));
+        int index = Random.Range(0, SpawnPoints.Count);
 
-        _isEmpty = false;
-    }
+        Resource resource = Resources.Pop();
 
-    public void ThrowAwayResource()
-    {
-        _spawnerAnimator.PlayVibrationAnimation();
-
-        int index = Random.Range(0, _spawnPoints.Count);
-
-        Resource resource = _resources.Pop();
-
-        resource.transform.DOJump(_spawnPoints[index].transform.position, JumpPower, NumJumps, Duration)
+        resource.transform.DOJump(SpawnPoints[index].transform.position, resource.JumpPower, resource.NumJumps, resource.Duration)
             .SetUpdate(UpdateType.Normal, false)
             .SetLink(resource.gameObject)
             .OnKill(() =>
@@ -76,7 +56,32 @@ public class Spawner : MonoBehaviour
                 resource.EnableTimer();
             });
 
-        if (_resources.Count == 0)
+        if (Resources.Count == 0)
             ResetTimerSpawn();
+    }
+
+    private void ResetTimerSpawn()
+    {
+        SpawnerAnimator.PlayAnimationDecrease();
+        SpawnTimer = 0f;
+        IsEmpty = true;
+    }
+
+    protected void InstantiateResources()
+    {
+        for (int i = 0; i < CountResources; i++)
+            Resources.Push(Instantiate(PrefabResource, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity));
+
+        IsEmpty = false;
+    }
+
+    public void ThrowAwayResources()
+    {
+        if (Resources.Count >= CountPerHit)
+            for (int i = 0; i < CountPerHit; i++)
+                ThrowResource();
+        else
+            for (int i = 0; i <= Resources.Count; i++)
+                ThrowResource();
     }
 }

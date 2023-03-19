@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db8511e438dce5844934ca039146cb60, type: 3}
+  m_Name: FactorySettings
+  m_EditorClassIdentifier: 
+  _productionRate: 0.5
+  _countResourcesRequiredFactoryCoalInLumber: 2
+  _countResourcesRequiredFactoryCrystalInGold: 2
+  _countResourcesRequiredFactoryCrystalInIron: 3
+  _countResourcesRequiredFactoryGoldInCrystal: 1
+  _countResourcesRequiredFactoryGoldInIron: 2
+  _countResourcesRequiredFactoryIronInCrystal: 1
+  _countResourcesRequiredFactoryIronInGold: 1
+  _countResourcesRequiredFactoryLumberInCoal: 1
+  _countResourcesTakesFactoryCoalInLumber: 1
+  _countResourcesTakesFactoryCrystalInGold: 1
+  _countResourcesTakesFactoryCrystalInIron: 1
+  _countResourcesTakesFactoryGoldInCrystal: 2
+  _countResourcesTakesFactoryGoldInIron: 1
+  _countResourcesTakesFactoryIronInCrystal: 3
+  _countResourcesTakesFactoryIronInGold: 2
+  _countResourcesTakesFactoryLumberInCoal: 2

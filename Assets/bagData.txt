@@ -1,0 +1,1 @@
+[{"Name":"Crystal","CountResources":0,"MaxCountResources":100},{"Name":"Gold","CountResources":0,"MaxCountResources":100},{"Name":"Iron","CountResources":10,"MaxCountResources":100},{"Name":"Coal","CountResources":0,"MaxCountResources":100},{"Name":"Lumber","CountResources":0,"MaxCountResources":100}]

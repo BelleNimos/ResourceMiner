@@ -4,7 +4,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent), typeof(PlayerAnimator))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private GameSettings _gameSettings;
+    [SerializeField] private CharacterSettings _characterSettings;
     [SerializeField] private Bag _bag;
 
     private NavMeshAgent _navMeshAgent;
@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _rotateSpeed = 1f;
-        _moveSpeed = _gameSettings.MoveSpeed;
+        _moveSpeed = _characterSettings.MoveSpeed;
     }
 
     public void Move(Vector3 moveDirection)
