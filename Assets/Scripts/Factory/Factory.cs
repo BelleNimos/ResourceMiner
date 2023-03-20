@@ -5,10 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(FactoryAnimator))]
 public abstract class Factory : MonoBehaviour
 {
-    [SerializeField] protected List<Point> SpawnPoints;
-    [SerializeField] protected FactorySettings FactorySettings;
-    [SerializeField] protected Resource PrefabSpawnResource;
+    [SerializeField] private List<Point> SpawnPoints;
+    [SerializeField] private Resource PrefabSpawnResource;
+
     [SerializeField] protected Resource PrefabContainerResource;
+    [SerializeField] protected FactorySettings FactorySettings;
 
     private Stack<Resource> _resources;
     private FactoryAnimator _factoryAnimator;

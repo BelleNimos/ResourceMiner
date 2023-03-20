@@ -8,8 +8,8 @@ public class Bag : MonoBehaviour
 {
     [SerializeField] private BagSettings _bagSettings;
     [SerializeField] private List<Cell> _listCells;
-    [SerializeField] private List<Point> _departurePoints;
     [SerializeField] private List<ResourceUI> _resourcesUI;
+    [SerializeField] private List<Point> _departurePoints;
     [SerializeField] private Transform _points;
 
     private BagData _bagData;
@@ -19,7 +19,7 @@ public class Bag : MonoBehaviour
     private string _savePath;
     private string _saveFileName = "bagData.json";
 
-    private const string Fill = "Fill";
+    private const string FillText = "Fill";
 
     private void Awake()
     {
@@ -120,7 +120,7 @@ public class Bag : MonoBehaviour
                     MoveResource(resource);
                     resource.ChangeLayer();
                     resource.PlayDecreaseAnimation();
-                    _animator.SetTrigger(Fill);
+                    _animator.SetTrigger(FillText);
                     cell.Value.AddResource(resource);
                 }
             }

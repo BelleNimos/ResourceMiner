@@ -9,7 +9,7 @@ public abstract class ResourceUI : MonoBehaviour
     [SerializeField] private RectTransform _visionPositiom;
     [SerializeField] private RectTransform _notVisionPositiom;
 
-    private const string Increase = "Increase";
+    private const string IncreaseText = "Increase";
 
     public string Name { get; protected set; }
 
@@ -23,13 +23,13 @@ public abstract class ResourceUI : MonoBehaviour
 
     public void PlayAnimationIncrease()
     {
-        _animator.SetTrigger(Increase);
+        _animator.SetTrigger(IncreaseText);
     }
 
     public void SetCurrentCount(int count, bool isPlayAnimation)
     {
         if (isPlayAnimation == true)
-            _animator.SetTrigger(Increase);
+            _animator.SetTrigger(IncreaseText);
 
         _count.text = count.ToString();
     }

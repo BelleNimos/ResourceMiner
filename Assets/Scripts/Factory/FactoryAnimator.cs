@@ -14,10 +14,10 @@ public class FactoryAnimator : MonoBehaviour
 
     public void PlayVibrationAnimation()
     {
-        Vector3 onePosition = new Vector3(_startPosition.x + 0.1f, _startPosition.y + 0.1f, _startPosition.z + 0.1f);
-        Vector3 twoPosition = new Vector3(_startPosition.x - 0.1f, _startPosition.y - 0.1f, _startPosition.z - 0.1f);
-        Vector3 threePosition = new Vector3(_startPosition.x + 0.1f, _startPosition.y + 0.1f, _startPosition.z - 0.1f);
-        Vector3 fourPosition = new Vector3(_startPosition.x - 0.1f, _startPosition.y - 0.1f, _startPosition.z + 0.1f);
+        Vector3 onePosition = new(_startPosition.x + 0.1f, _startPosition.y + 0.1f, _startPosition.z + 0.1f);
+        Vector3 twoPosition = new(_startPosition.x - 0.1f, _startPosition.y - 0.1f, _startPosition.z - 0.1f);
+        Vector3 threePosition = new(_startPosition.x + 0.1f, _startPosition.y + 0.1f, _startPosition.z - 0.1f);
+        Vector3 fourPosition = new(_startPosition.x - 0.1f, _startPosition.y - 0.1f, _startPosition.z + 0.1f);
 
         DOTween.Sequence()
             .Append(transform.DOMove(onePosition, _delay)).SetUpdate(UpdateType.Normal, false).SetLink(gameObject)

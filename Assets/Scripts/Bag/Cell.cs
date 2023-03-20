@@ -3,6 +3,8 @@ using UnityEngine;
 
 public abstract class Cell : MonoBehaviour
 {
+    [SerializeField] private TutorialSelector _tutorialSelector;
+    [SerializeField] private List<FactoryPointer> _factoryPointers;
     [SerializeField] private ResourceUI _resourceUI;
     [SerializeField] private Resource _prefabResource;
     [SerializeField] private string _name;
@@ -10,12 +12,17 @@ public abstract class Cell : MonoBehaviour
     private Stack<Resource> _resources;
 
     public string Name => _name;
-    public int MaxCountResources { get; private set; }
     public int CurrentCountResources => _resources.Count;
+    public int MaxCountResources { get; private set; }
 
     private void Awake()
     {
         _resources = new Stack<Resource>();
+    }
+
+    private void Start()
+    {
+        SwitchPointers();
     }
 
     private void SetFlagResourceUI()
@@ -24,6 +31,19 @@ public abstract class Cell : MonoBehaviour
             _resourceUI.ChangePosition(true);
         else
             _resourceUI.ChangePosition(false);
+    }
+
+    public void SwitchPointers()
+    {
+        if (_tutorialSelector.IsEnable == true)
+        {
+            if (_resources.Count == 0)
+                for (int i = 0; i < _factoryPointers.Count; i++)
+                    _factoryPointers[i].Disable();
+            else
+                for (int i = 0; i < _factoryPointers.Count; i++)
+                    _factoryPointers[i].Enable();
+        }
     }
 
     public void AssignCount()
@@ -38,6 +58,7 @@ public abstract class Cell : MonoBehaviour
         _resources.Push(resource);
         _resourceUI.SetCurrentCount(CurrentCountResources, true);
         SetFlagResourceUI();
+        SwitchPointers();
     }
 
     public void PullResource(ref Resource resource)
@@ -45,6 +66,7 @@ public abstract class Cell : MonoBehaviour
         resource = _resources.Pop();
         _resourceUI.SetCurrentCount(CurrentCountResources, false);
         SetFlagResourceUI();
+        SwitchPointers();
     }
 
     public void InstantiateResources(int count, Transform transform)

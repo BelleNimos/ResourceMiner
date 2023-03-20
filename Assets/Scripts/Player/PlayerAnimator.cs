@@ -5,9 +5,9 @@ public class PlayerAnimator : MonoBehaviour
 {
     private Animator _animator;
 
-    private const string Run = "Run";
-    private const string Idle = "Idle";
-    private const string Mining = "Mining";
+    private const string RunText = "Run";
+    private const string IdleText = "Idle";
+    private const string MiningText = "Mining";
 
     private void Awake()
     {
@@ -16,18 +16,18 @@ public class PlayerAnimator : MonoBehaviour
 
     public void PlayRunAnimation()
     {
-        _animator.SetBool(Run, true);
-        _animator.SetBool(Idle, false);
+        _animator.SetBool(RunText, true);
+        _animator.SetBool(IdleText, false);
     }
 
     public void PlayIdleAnimation()
     {
-        _animator.SetBool(Idle, true);
-        _animator.SetBool(Run, false);
+        _animator.SetBool(IdleText, true);
+        _animator.SetBool(RunText, false);
     }
 
     public void PlayMiningAnimation()
     {
-        _animator.SetTrigger(Mining);
+        _animator.SetTrigger(MiningText);
     }
 }

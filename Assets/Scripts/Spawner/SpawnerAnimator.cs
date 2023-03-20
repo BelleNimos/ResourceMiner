@@ -7,8 +7,8 @@ public class SpawnerAnimator : MonoBehaviour
     private Animator _animator;
     private Vector3 _startPosition;
 
-    private const string Decrease = "Decrease";
-    private const string Increase = "Increase";
+    private const string DecreaseText = "Decrease";
+    private const string IncreaseText = "Increase";
 
     private void Awake()
     {
@@ -37,11 +37,11 @@ public class SpawnerAnimator : MonoBehaviour
 
     public void PlayAnimationIncrease()
     {
-        _animator.SetTrigger(Increase);
+        _animator.SetTrigger(IncreaseText);
     }
 
     public void PlayAnimationDecrease()
     {
-        _animator.SetTrigger(Decrease);
+        _animator.SetTrigger(DecreaseText);
     }
 }
